@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <!--建立一个RadioGroup-->
+    <RadioGroup
+        android:id="@+id/ChooseToneRG"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="18dp">
+
+        <RadioButton
+            android:id="@+id/ChooseToneRGBu1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ChooseTone1" />
+
+        <RadioButton
+            android:id="@+id/ChooseToneRGBu2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ChooseTone2" />
+    </RadioGroup>
+</LinearLayout>
