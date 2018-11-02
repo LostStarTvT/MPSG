@@ -46,6 +46,7 @@ import android.widget.Toast;
 
 import com.proposeme.seven.mpsg.R;
 import com.proposeme.seven.mpsg.baseData.User;
+import com.proposeme.seven.mpsg.baseData.getSharedPreferencesBaseUrl;
 import com.proposeme.seven.mpsg.https.userLoginAndRegister;
 import com.proposeme.seven.mpsg.service.LockedViewService;
 import com.proposeme.seven.mpsg.util.L;
@@ -53,6 +54,7 @@ import com.proposeme.seven.mpsg.util.L;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * 登录界面， 邮箱+密码
@@ -415,12 +417,12 @@ public class LoginAndRegisterActivity extends AppCompatActivity implements Loade
                 Intent intent = new Intent(LoginAndRegisterActivity.this,MainActivity.class);
                 startActivity(intent);
                 //将用户userLoginID存储到本地。
-                SharedPreferences settings=getSharedPreferences("UserLoginInfo", 0);
+                SharedPreferences settings=getSharedPreferences(getSharedPreferencesBaseUrl.UserLoginInfo, 0);
                 SharedPreferences.Editor editor=settings.edit();
-                editor.putString("loginId",mEmail);
-                editor.putBoolean("userIsGuardOn",user.isUserIsGuardOn());
-                editor.putString("userPhoneId",user.getUserPhoneId());
-                editor.putString("userLockedPwd",user.getUserLockedPwd());
+                editor.putString(getSharedPreferencesBaseUrl.UserLoginID,mEmail);
+                editor.putBoolean(getSharedPreferencesBaseUrl.UserIsGuardOn,user.isUserIsGuardOn());
+                editor.putString(getSharedPreferencesBaseUrl.UserPhoneId,user.getUserPhoneId());
+                editor.putString(getSharedPreferencesBaseUrl.UserLockedPwd,user.getUserLockedPwd());
                 editor.commit();
 
             } else {

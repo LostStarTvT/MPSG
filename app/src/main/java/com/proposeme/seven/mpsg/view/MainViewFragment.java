@@ -1,5 +1,6 @@
 package com.proposeme.seven.mpsg.view;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -28,7 +29,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by seven on 2018/9/11
- * Describe: 画出打开解锁的界面，用户点击之后，跳到悬浮窗屏蔽界面。
+ * Describe: 画出解锁的界面，用户点击之后，跳到悬浮窗屏蔽界面。
  *  1 如果是没有设置过密码，则会跳转到用户设置新密码的界面，
  *  2 如果有密码则会直接跳转到悬浮窗进行上锁。
  */
@@ -38,6 +39,7 @@ public class MainViewFragment extends onTouchListenerFragment{
     private ToggleButton  toggle;  //点击按钮
     private boolean isLocked; // 手机是否被锁住。
     private boolean whetherHaveLockedPwd = false;  //是否有解锁密码。
+    private static Context mContext;
 
     //fragment 中的初始化需要在下面的这个方法中进行。
     @Nullable
@@ -48,7 +50,7 @@ public class MainViewFragment extends onTouchListenerFragment{
         View v = inflater.inflate(R.layout.main_frag, container, false);
 
         toggle = v.findViewById(R.id.TB_On_Off); //找到开关
-
+        mContext = getActivity();
         //开启水波纹
         rippleBackground= v.findViewById(R.id.content);
         rippleBackground.startRippleAnimation();
@@ -111,6 +113,10 @@ public class MainViewFragment extends onTouchListenerFragment{
             whetherHaveLockedPwd = true;
         }
         L.e("userIsGuard 2 " + isLocked);
+    }
+
+    public static Context getMContext(){
+        return mContext;
     }
 
 }

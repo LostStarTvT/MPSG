@@ -26,10 +26,14 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.proposeme.seven.mpsg.R;
+import com.proposeme.seven.mpsg.baseData.getSharedPreferencesBaseUrl;
+import com.proposeme.seven.mpsg.https.userUnlockPhoneHttp;
 import com.proposeme.seven.mpsg.ui.MainActivity;
 import com.proposeme.seven.mpsg.ui.NumLockPanel;
 import com.proposeme.seven.mpsg.util.L;
 import com.skyfishjy.library.RippleBackground;
+
+import java.io.IOException;
 
 /*
     实现用悬浮窗进行锁屏。只需要显示输入密码的界面，其他的都不需要，这个只是获取密码，之后直接的发送到服务器，
@@ -42,16 +46,11 @@ public class LockedViewService extends Service {
 
     RelativeLayout floatKeyboardLayout; //绑定悬浮窗输入密码xml文件
     LinearLayout floatLockedLayout; //绑定悬浮窗锁定密码视图。
-
     WindowManager.LayoutParams params;
     WindowManager windowManager;
-    ImageButton imageButton;
 
     //密码判定逻辑变量
     final private static int COUNT_DOWN_TIME = 10; //倒计时时间长度。
-
-    private boolean ThreadStop = false;
-    private final  static int FLAG_STOP_DELAY_TIME = 100;
 
     //锁定界面的组件
     private ToggleButton toggle;  //点击按钮
@@ -61,14 +60,16 @@ public class LockedViewService extends Service {
     private NumLockPanel mNumLockPanel; //获取xml中的密码按键。
     private TextView countDownTextView; //显示倒计时的TextView。
 
-    private Handler handler;
-    private static Thread mThread;
-
     //获取用户本地变量
     private SharedPreferences settings; //进行读取本地数据的变量。
-    //不与Activity进行绑定.
 
+    //设置倒计时控件
     private CountDownTimer waitTimer;
+
+    //用户进行网络连接的http类。
+    private userUnlockPhoneHttp mUserUnlockPhoneHttp;
+    private userUnlockPhoneHttp.userLockedPwdData mUserLockedPwdData;
+
     @Override
     public IBinder onBind(Intent intent)
     {
@@ -80,6 +81,10 @@ public class LockedViewService extends Service {
     {
         super.onCreate();
         Log.i(TAG,"MainService Created");
+
+        mUserUnlockPhoneHttp = new userUnlockPhoneHttp();
+        mUserLockedPwdData = new userUnlockPhoneHttp.userLockedPwdData();
+
         createTouch();
     }
 
@@ -108,14 +113,17 @@ public class LockedViewService extends Service {
                 //此处result即为输入密码字符串， pressureResultArray为对应的压力按压值。
                 //当输入完成之后需要向handler 发送停止的信号。
                 waitTimer.cancel();
-                if (identityUserPwd(result,pressureResultArray)){
-                    stopSelf();  //如果身份验证成功则直接关闭锁屏。
-                }else {
-                    //密码验证失败则 调回解锁界面。
-                    windowManager.removeView(floatKeyboardLayout);
-                    windowManager.addView(floatLockedLayout,params);
+                try {
+                    if (identityUserPwd(result,pressureResultArray)){
+                        stopSelf();  //如果身份验证成功则直接关闭锁屏。
+                    }else {
+                        //密码验证失败则 调回解锁界面。
+                        windowManager.removeView(floatKeyboardLayout);
+                        windowManager.addView(floatLockedLayout,params);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-// handler.sendEmptyMessage(FLAG_STOP_DELAY_TIME);
             }
         });
         //提示开关锁界面。找到组件
@@ -129,7 +137,6 @@ public class LockedViewService extends Service {
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
                 //当点击是可以直接进行切换。
                 windowManager.removeView(floatLockedLayout);
                 windowManager.addView(floatKeyboardLayout,params);
@@ -176,11 +183,16 @@ public class LockedViewService extends Service {
     /*
         检测是否为本人使用的方法，也就是验证是否为真正主人 ,false 为假
     */
-    private boolean identityUserPwd(String pwd,String[] pressureResultArray){
+    private boolean identityUserPwd(String pwd,String[] pressureResultArray) throws IOException {
+
         settings = MainActivity.getMContext().getSharedPreferences("UserLoginInfo", MODE_PRIVATE);
-        String Pwd = settings.getString("userLockedPwd",null);
-        L.e("ccccc1 Pwd" + Pwd + " " + "pwd2 " + pwd);
-        return pwd.equals(Pwd);
+        mUserLockedPwdData.setPressureData(pressureResultArray);
+        mUserLockedPwdData.setPwdData(pwd);
+        mUserLockedPwdData.setLoginId(settings.getString(getSharedPreferencesBaseUrl.UserLoginID,null));
+        mUserUnlockPhoneHttp.initPostSqlRequest(mUserLockedPwdData,"user_unlock_phone");
+        mNumLockPanel.resetResult();
+
+        return false;
     }
 
     private void delayTime() {
@@ -188,7 +200,6 @@ public class LockedViewService extends Service {
         private int count = COUNT_DOWN_TIME;
             public void onTick(long millisUntilFinished) {
                 count --;
-//                handler.sendEmptyMessage(count);
                 countDownTextView.setText( "倒计时" + count  + "s");
                 //called every 300 milliseconds, which could be used to
                 //send messages or some other action
@@ -203,11 +214,6 @@ public class LockedViewService extends Service {
             }
         };
         waitTimer.start();
-
-
     }
-
-
-
 
 }

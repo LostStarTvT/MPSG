@@ -1,5 +1,6 @@
 package com.proposeme.seven.mpsg.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -11,12 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.proposeme.seven.mpsg.R;
+import com.proposeme.seven.mpsg.baseData.getSharedPreferencesBaseUrl;
+import com.proposeme.seven.mpsg.https.userInitLockedPwdHttp;
 import com.proposeme.seven.mpsg.ui.NumLockPanel;
 
 
+import java.io.IOException;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -27,14 +30,18 @@ import static android.content.Context.MODE_PRIVATE;
 public class NumPwdLockedFragment extends onTouchListenerFragment {
 
     private NumLockPanel mNumLockPanel; //获取xml中的密码按键。
+    @SuppressLint("StaticFieldLeak")
     private static Context mContext;
     private TextView countDownTextView; //显示倒计时的TextView。
-    final private static int COUNT_DOWN_TIME = 10; //倒计时时间长度。
     private android.support.v4.app.FragmentManager fm;
-    String userLockedPwd = "";//保存读取的用户密码。
+    private String userLockedPwd = "";//保存读取的用户密码。
 
+    private String userLoginId = "";  //用户登录账号。
     private SharedPreferences settings; //进行读取本地数据的变量。
 
+    //用户进行设置新密码的http类对象
+    private userInitLockedPwdHttp mUserInitLockedPwdHttp;
+    private userInitLockedPwdHttp.userLockedPwdData mUserLockedPwdData;
 
     //fragment 中的初始化需要在下面的这个方法中进行。
     @Nullable
@@ -51,7 +58,11 @@ public class NumPwdLockedFragment extends onTouchListenerFragment {
         mNumLockPanel = v.findViewById(R.id.num_pwd_lock);
         countDownTextView = v.findViewById(R.id.Countdown_show);
         countDownTextView.setText("请输入六位数字密码！");
-        userLockedPwd = settings.getString("userLockedPwd",null);
+        userLockedPwd = settings.getString(getSharedPreferencesBaseUrl.UserLockedPwd,null);
+        userLoginId = settings.getString(getSharedPreferencesBaseUrl.UserLoginID,null);
+        mUserInitLockedPwdHttp = new userInitLockedPwdHttp();
+        mUserLockedPwdData = new userInitLockedPwdHttp.userLockedPwdData();
+
         //判断是否是第一次记性密码设置。如果是则进行设置。
         //设置提示弹出框。
         AlertDialog dialog = new AlertDialog.Builder(getContext()).setTitle("请初始化手机解锁密码！")
@@ -68,31 +79,24 @@ public class NumPwdLockedFragment extends onTouchListenerFragment {
             public void inputFinish(String result, String[] pressureResultArray) {
                 //此处result即为输入密码字符串， pressureResultArray为对应的压力按压值。
                 // 再次获取到用户设置到的新密码之后，需要发送到服务器，之后在进行提示输入密码成功。
-                //仍需测试！！！
 
-//                LoadingDialog dialog = new LoadingDialog(MainActivity.getMContext());
-//                dialog.setMsg("请稍等...");
-//                dialog.setNotCancel();  //设置dialog不自动消失
-//                dialog.show();
+                //设置用户数据
+                mUserLockedPwdData.setPwdData(result);
+                mUserLockedPwdData.setLoginId(userLoginId);
 
+                try {
+                    mUserInitLockedPwdHttp.initPostSqlRequest(mUserLockedPwdData,"user_init_locked_pwd");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-                SharedPreferences settings= getActivity().getSharedPreferences("UserLoginInfo", MODE_PRIVATE);
-//                if (newPwdFlag){ // 输入新密码的逻辑。
-                Toast.makeText(NumPwdLockedFragment.getMContext(), "密码设置成功！", Toast.LENGTH_SHORT).show();
+                SharedPreferences settings= getActivity().getSharedPreferences(getSharedPreferencesBaseUrl.UserLoginInfo, MODE_PRIVATE);
                 SharedPreferences.Editor editor=settings.edit();
-                editor.putString("userLockedPwd",result); //将新密码进行存储。
+                editor.putString(getSharedPreferencesBaseUrl.UserLockedPwd,result); //将新密码进行存储。
                 editor.commit();
-
-
-                //L.e("result" +result);
                 //L.e("result " + "p0" + pressureResultArray[0] +" p1"+ pressureResultArray[1]+" p2"+ pressureResultArray[2]+" p3"+ pressureResultArray[3]+" p4"+ pressureResultArray[4]+" p5"+ pressureResultArray[5]);
                 mNumLockPanel.showErrorStatus();
-                //输入完密码之后进行判断的逻辑。。
-                //需要显示密码是否正确。
-                //最后总是要进行页面的跳转。
-
                 //密码设置成功之后进行跳转回主界面。
-
                 fm.beginTransaction().replace(R.id.frame_content,new MainViewFragment()).commit();
             }
         });

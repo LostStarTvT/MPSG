@@ -86,10 +86,7 @@
             android:name=".service.LockedViewService"
             android:enabled="true"
             android:exported="true" />
-        <service
-            android:name=".service.LockedKeyboardService"
-            android:enabled="true"
-            android:exported="true"></service>
+
     </application>
 
 </manifest>
