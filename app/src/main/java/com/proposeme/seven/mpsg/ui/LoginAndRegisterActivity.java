@@ -399,7 +399,6 @@ public class LoginAndRegisterActivity extends AppCompatActivity implements Loade
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
                     return false;//注册的肯定是要能够登录。
                 }
 

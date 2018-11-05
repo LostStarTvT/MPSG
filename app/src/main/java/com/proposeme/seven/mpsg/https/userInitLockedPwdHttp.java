@@ -27,6 +27,7 @@ import static android.content.Context.MODE_PRIVATE;
  */
 public class userInitLockedPwdHttp extends baseHttp{
 
+
     //处理返回的数据。
     @Override
     void operationResponse(Call call) throws IOException {
@@ -52,6 +53,7 @@ public class userInitLockedPwdHttp extends baseHttp{
                             ResponseBody body = response.body();
                             final String msg = body.string();
                             body.close();
+
                             new Thread(){
                                 public void run() {
                                     Looper.prepare();
@@ -84,7 +86,7 @@ public class userInitLockedPwdHttp extends baseHttp{
         //但是pwdData可以直接进行形成一个字符串，就没有必要用数组进行存储。
         private String pwdData;
         private String[] pressureData;
-
+        private Boolean UnlockState = false;
         public void setPressureData(String[] pressureData) {
             this.pressureData = pressureData;
         }
@@ -92,6 +94,15 @@ public class userInitLockedPwdHttp extends baseHttp{
         public void setPwdData(String pwdData) {
             this.pwdData = pwdData;
         }
+
+        public Boolean getUnlockState() {
+            return UnlockState;
+        }
+
+        public void setUnlockState(Boolean unlockState) {
+            UnlockState = unlockState;
+        }
     }
+
 }
 

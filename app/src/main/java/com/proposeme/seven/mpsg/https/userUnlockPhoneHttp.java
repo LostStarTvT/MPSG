@@ -22,8 +22,11 @@ import okhttp3.ResponseBody;
  * Describe: 用户进行解锁手机的http类。
  */
 public class userUnlockPhoneHttp extends baseHttp{
+
+    private OnUnlockedSuccess mOnUnlockedSuccess;
+
     @Override
-    void operationResponse(Call call) throws IOException {
+    void operationResponse(Call call) {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, IOException e) {
@@ -38,7 +41,7 @@ public class userUnlockPhoneHttp extends baseHttp{
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if(response!=null && response.isSuccessful()){
+                if(response.isSuccessful()){
                     //首先判断请求是否成功。200表示成功
                     final int code = response.code();
                     JSONObject jsonObject = null;
@@ -61,13 +64,9 @@ public class userUnlockPhoneHttp extends baseHttp{
                             e.printStackTrace();
                         }
                         if (authenticationFlag == 200){
-                            new Thread(){
-                                public void run() {
-                                    Looper.prepare();
-                                    Toast.makeText(MainViewFragment.getMContext(),"解锁成功！",Toast.LENGTH_LONG).show();
-                                    Looper.loop();
-                                };
-                            }.start();
+                            mOnUnlockedSuccess.OnSuccess(true);
+                        }else {
+                            mOnUnlockedSuccess.OnSuccess(false);
                         }
 
                     }
@@ -91,5 +90,15 @@ public class userUnlockPhoneHttp extends baseHttp{
         public void setPwdData(String pwdData) {
             this.pwdData = pwdData;
         }
+    }
+
+    //定义注册回调
+    public void UnlockedSuccessRegister(OnUnlockedSuccess mOnUnlockedSuccess){
+        this.mOnUnlockedSuccess = mOnUnlockedSuccess;
+    }
+
+    //定义接口实现登录成功时候会进行回调。
+    public interface OnUnlockedSuccess{
+        void OnSuccess(boolean success);
     }
 }

@@ -3,6 +3,8 @@ package com.proposeme.seven.mpsg.https;
 import com.google.gson.Gson;
 import com.proposeme.seven.mpsg.baseData.UrlData;
 import java.io.IOException;
+import java.util.logging.Handler;
+
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -21,10 +23,9 @@ public abstract class baseHttp {
 
     //初始post请求，向服务器发送一个sql查询请求。必须传递过来user 和具体的url 地址。
     /*
-        执行网络请求的基本类。 1 发送给服务器的用户数据 2 指定url。
-     */
-    public void initPostSqlRequest(baseUser mUser,String url) throws IOException {
-
+      执行网络请求的基本类。 1 发送给服务器的用户数据 2 指定url。
+    */
+    public void initPostSqlRequest(baseUser mUser, String url) throws IOException {
 
         //构建一个user对象，将其转变成json传递给服务器。
         mOkHttpClient = new OkHttpClient();

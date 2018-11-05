@@ -19,7 +19,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -30,14 +29,15 @@ import com.proposeme.seven.mpsg.baseData.getSharedPreferencesBaseUrl;
 import com.proposeme.seven.mpsg.https.userUnlockPhoneHttp;
 import com.proposeme.seven.mpsg.ui.MainActivity;
 import com.proposeme.seven.mpsg.ui.NumLockPanel;
-import com.proposeme.seven.mpsg.util.L;
 import com.skyfishjy.library.RippleBackground;
 
 import java.io.IOException;
 
 /*
-    实现用悬浮窗进行锁屏。只需要显示输入密码的界面，其他的都不需要，这个只是获取密码，之后直接的发送到服务器，
-    服务器返回的结果才能够实现。不需要任何的提示信息。
+    实现用悬浮窗进行锁屏。显示输入密码的界面和解锁界面。通过调用网络连接类来进行身份的验证。
+    因为是多线程，所以通过接口回调来实现网络连接类和主线程进行数据的交互， 最后通过主线程与handle进行绑定来实现对UI的
+    更新和停止Service。
+    没有设置显示提示界面和进度条。。
     2018/10/30
  */
 
@@ -70,6 +70,24 @@ public class LockedViewService extends Service {
     private userUnlockPhoneHttp mUserUnlockPhoneHttp;
     private userUnlockPhoneHttp.userLockedPwdData mUserLockedPwdData;
 
+    //接收用户解锁成功还是失败的状态。
+    private final int UnlockSuccess = 100;
+    private final int UnlockFailure = 200;
+
+    //接受后台验证成功的信息。 handle 直接绑定是本线程，所以直接操作这个线程。
+    @SuppressLint("HandlerLeak")
+    private Handler mHandler =new Handler() {
+        public void handleMessage(Message msg) {
+            if (msg.what == UnlockSuccess ) {
+                // 身份验证成功。
+                stopSelf();
+            }else if(msg.what == UnlockFailure){
+                // 身份验证失败。
+                windowManager.removeView(floatKeyboardLayout);
+                windowManager.addView(floatLockedLayout,params);
+            }
+        }
+    };
     @Override
     public IBinder onBind(Intent intent)
     {
@@ -85,13 +103,26 @@ public class LockedViewService extends Service {
         mUserUnlockPhoneHttp = new userUnlockPhoneHttp();
         mUserLockedPwdData = new userUnlockPhoneHttp.userLockedPwdData();
 
+        //这个回调是在验证解锁http中进行注册。当后台收到服务器返回来的结果时，会调用这个回调函数。
+        //success = true 表示验证成功， false 表示验证失败。
+        //因为是新开的线程，所以不能够直接的操作主线程记性UI更新，所以只能够想handle 发送信号。
+        //根据success 标示进行发送信号。
+        mUserUnlockPhoneHttp.UnlockedSuccessRegister(new userUnlockPhoneHttp.OnUnlockedSuccess() {
+            @Override
+            public void OnSuccess(boolean success) {
+                if (success){
+                    mHandler.sendEmptyMessage(UnlockSuccess);
+                }else {
+                    mHandler.sendEmptyMessage(UnlockFailure);
+                }
+            }
+        });
+
         createTouch();
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private void createTouch()
     {
-
         //赋值WindowManager&LayoutParam.
         params = new WindowManager.LayoutParams();
         windowManager = (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);
@@ -111,16 +142,10 @@ public class LockedViewService extends Service {
             @Override
             public void inputFinish(String result, String[] pressureResultArray) {
                 //此处result即为输入密码字符串， pressureResultArray为对应的压力按压值。
-                //当输入完成之后需要向handler 发送停止的信号。
+                //输入完成之后调用验证身份的类。
                 waitTimer.cancel();
                 try {
-                    if (identityUserPwd(result,pressureResultArray)){
-                        stopSelf();  //如果身份验证成功则直接关闭锁屏。
-                    }else {
-                        //密码验证失败则 调回解锁界面。
-                        windowManager.removeView(floatKeyboardLayout);
-                        windowManager.addView(floatLockedLayout,params);
-                    }
+                    identityUserPwd(result,pressureResultArray);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -183,16 +208,16 @@ public class LockedViewService extends Service {
     /*
         检测是否为本人使用的方法，也就是验证是否为真正主人 ,false 为假
     */
-    private boolean identityUserPwd(String pwd,String[] pressureResultArray) throws IOException {
-
+    private void identityUserPwd(String pwd,String[] pressureResultArray) throws IOException {
+        //1 设置网络连接参数
         settings = MainActivity.getMContext().getSharedPreferences("UserLoginInfo", MODE_PRIVATE);
         mUserLockedPwdData.setPressureData(pressureResultArray);
         mUserLockedPwdData.setPwdData(pwd);
         mUserLockedPwdData.setLoginId(settings.getString(getSharedPreferencesBaseUrl.UserLoginID,null));
+        //2 发起网络连接。
         mUserUnlockPhoneHttp.initPostSqlRequest(mUserLockedPwdData,"user_unlock_phone");
+        //3 重置输入面板的密码框。
         mNumLockPanel.resetResult();
-
-        return false;
     }
 
     private void delayTime() {
@@ -215,5 +240,8 @@ public class LockedViewService extends Service {
         };
         waitTimer.start();
     }
+
+
+
 
 }
