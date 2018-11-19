@@ -35,6 +35,7 @@
     <string name="user_setting">设置</string>
     <string name="user_search_phone">查找手机</string>
     <string name="user_alert_pwd">修改密码</string>
+    <string name="user_collect_finger_data">用户按压</string>
 
     <!--个人信页面字符-->
     <string name="my_phone_id">手机型号:</string>

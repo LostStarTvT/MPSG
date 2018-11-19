@@ -20,7 +20,6 @@ public class AboutAppFragment extends onTouchListenerFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View v = inflater.inflate(R.layout.about_app, container, false);
-        return  v;
+        return inflater.inflate(R.layout.about_app, container, false);
     }
 }

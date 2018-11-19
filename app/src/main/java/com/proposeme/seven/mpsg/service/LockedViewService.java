@@ -153,6 +153,8 @@ public class LockedViewService extends Service {
         });
         //提示开关锁界面。找到组件
         floatLockedLayout = (LinearLayout) inflater.inflate(R.layout.float_locked_layout,null);
+
+        //将设置的布局添加上去。
         windowManager.addView(floatLockedLayout,params);
         toggle = floatLockedLayout.findViewById(R.id.TB_On_Off);
         toggle.setChecked(true);
@@ -240,8 +242,5 @@ public class LockedViewService extends Service {
         };
         waitTimer.start();
     }
-
-
-
 
 }

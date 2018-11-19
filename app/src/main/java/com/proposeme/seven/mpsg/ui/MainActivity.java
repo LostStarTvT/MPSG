@@ -22,6 +22,7 @@ import android.view.MotionEvent;
 
 import com.proposeme.seven.mpsg.service.upDateMapsDataService;
 import com.proposeme.seven.mpsg.R;
+import com.proposeme.seven.mpsg.view.CollectPressureFragment;
 import com.proposeme.seven.mpsg.view.MainViewFragment;
 import com.proposeme.seven.mpsg.view.UserAlterPwdFragment;
 import com.proposeme.seven.mpsg.view.UserInfoFragment;
@@ -58,14 +59,6 @@ public class MainActivity extends AppCompatActivity  {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         fm = getSupportFragmentManager();
-//        //打算设置一个放回按钮 但是没有图标就很难受。不太懂安卓中的画图方式。
-//        mToolbar.setNavigationIcon(R.drawable.ic_menu_back);
-//        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                finish();
-//            }
-//        });
 
         //设置抽屉Drawer
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -77,9 +70,7 @@ public class MainActivity extends AppCompatActivity  {
         //设置navigationView点击事件
         navigationView = (NavigationView) findViewById(R.id.nav_view);
 
-//        fragmentManageGo(R.string.user_info,new UserInfoFragment()); //直接跳转到个人信息页面。
-//   正常     fragmentManageGo(R.string.main_view,new MainViewFragment()); //直接跳转到个人信息页面。
-        //测试页面
+        //进行页面跳转。
         fragmentManageGo(R.string.main_view,new MainViewFragment());
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -103,6 +94,9 @@ public class MainActivity extends AppCompatActivity  {
                         break;
                     case    R.id.login_out:
                         showLoginOutDialog();
+                        break;
+                    case    R.id.collect_user_finger_data:
+                        fragmentManageGo(R.string.user_collect_finger_data,new CollectPressureFragment());
                         break;
                 }
                 menuItem.setChecked(true);//点击了把它设为选中状态
@@ -129,6 +123,7 @@ public class MainActivity extends AppCompatActivity  {
         //跳转到新的fragment
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content,mFragment).commit();
     }
+
 
     //这个是touch事件的入口。通过这个进行分发每次的点击事件。
     @Override
@@ -157,7 +152,7 @@ public class MainActivity extends AppCompatActivity  {
      *
      */
     public interface MyTouchListener {
-        public void onTouch(MotionEvent ev) throws IOException;
+        void onTouch(MotionEvent ev) throws IOException;
     }
 
     /*
@@ -189,7 +184,7 @@ public class MainActivity extends AppCompatActivity  {
         dialog.show();//显示对话框
     }
 
-
+    //开启定位服务
     public void startAlarm(){
         /**
          首先获得系统服务
@@ -199,7 +194,6 @@ public class MainActivity extends AppCompatActivity  {
 
         /** 设置闹钟的意图，我这里是去调用一个服务，该服务功能就是获取位置并且上传*/
         Intent intent = new Intent(this, upDateMapsDataService.class);
-//        startService(intent);
         PendingIntent pendSender = PendingIntent.getService(this, 0, intent, 0);
         am.cancel(pendSender);
 

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="finger">
+        <item>大拇指</item>
+        <item>食指</item>
+        <item>中指</item>
+    </string-array>
+</resources>

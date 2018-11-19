@@ -16,7 +16,6 @@ import android.view.View;
 
 import com.proposeme.seven.mpsg.R;
 
-
 /**
  * Created by Seven on 18/9/11
  * 自定义keyboard 实验输入密码。

@@ -1,7 +1,6 @@
 package com.proposeme.seven.mpsg.https;
 
 
-import android.widget.Toast;
 
 import com.proposeme.seven.mpsg.util.L;
 import org.json.JSONObject;
@@ -50,12 +49,18 @@ public class userStorePressure extends baseHttp{
 
         private String pressure = null; //存储压力
 
+        private int fingerID = 0; //存储在那个手指。  0 大拇指  1 食指  2 中指。支持三个手指。
+
         public String getPressure() {
             return pressure;
         }
 
         public void setPressure(String pressure) {
             this.pressure = pressure;
+        }
+
+        public void setFingerID(int fingerID) {
+            this.fingerID = fingerID;
         }
     }
 }

@@ -25,6 +25,10 @@
             android:id="@+id/user_alert_pwd"
             android:icon="@drawable/ic_menu_manage"
             android:title="@string/user_alert_pwd" />
+        <item
+            android:id="@+id/collect_user_finger_data"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/user_collect_finger_data" />
     </group>
         <item
             android:id="@+id/login_out"
