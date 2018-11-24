@@ -9,6 +9,8 @@
         android:id="@+id/spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:spinnerMode="dialog"
+        android:prompt="@string/promptString"
         android:entries="@array/finger" />
 
 </LinearLayout>

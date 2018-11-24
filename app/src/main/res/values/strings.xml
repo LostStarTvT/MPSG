@@ -65,4 +65,6 @@
 
     <!--网络连接-->
     <string name="InternetState">Sorry,网络出现了一点小问题~</string>
+    <string name="promptString">请选择手指</string>
+
 </resources>

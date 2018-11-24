@@ -47,7 +47,7 @@ public class onTouchListenerFragment extends Fragment{
                     mUser.setLoginId(loginId);
                     mUser.setPressure(pressure);
                     //不注释为自动开启压力存储。
-                    storePressure.initPostSqlRequest(mUser,"user_pressure_store");
+//                    storePressure.initPostSqlRequest(mUser,"user_pressure_store");
                     Log.e("onTouchTest",pressure + "  " +  loginId);
                 }
             }
