@@ -5,11 +5,13 @@ package com.proposeme.seven.mpsg.baseData;
  * Describe: 管理需要的url数据
  */
 public class UrlData {
+
+    private  final  static String mSocket = ":8080/";
 //实验室连接
     //手机端ip地址
-    private final static String mBaseUrl = "http://192.168.137.1:3000/";
+//    private final static String mBaseUrl = "http://192.168.137.1:3000/";
 //电脑端连接ip地址
-//    private final static String mBaseUrl = "http://10.66.97.183:3000/";
+    private final static String mBaseUrl = "http://10.66.97.183" + mSocket;
 
     //寝室连接
 

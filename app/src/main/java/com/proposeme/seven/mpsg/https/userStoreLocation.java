@@ -35,7 +35,7 @@ public class userStoreLocation extends baseHttp{
                     if(code == 200){ //200表示存储成功。
                         ResponseBody body = response.body();
                         final String msg = body.string();
-                        //L.e("ccccc"+msg);
+                        L.e("ccccc"+msg);
                     }
                 }else {
                     L.e("loginFail");

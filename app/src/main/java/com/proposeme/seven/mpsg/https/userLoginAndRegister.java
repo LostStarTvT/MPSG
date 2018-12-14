@@ -106,6 +106,7 @@ public class userLoginAndRegister {
             ResponseBody body = response.body();
             final String msg = body.string();
             //将字符串转成json对象
+            L.e("ccccc" + msg);
             try {
                 jsonObject = new JSONObject(msg);
             } catch (JSONException e) {
@@ -117,9 +118,11 @@ public class userLoginAndRegister {
                 String mLoginState = jsonObject.getString("LoginState");
                 if (mLoginState.equals("200")) { //200表示密码正确。 之后进行后续的数据处理。
                     //取出数组用户放在服务器的数据。需要用json数组进行数据的读取
-                    JSONArray mJsonArray = jsonObject.getJSONArray("data");
-                    JSONObject object = (JSONObject) mJsonArray.get(0);
-
+                    // 以下是js服务器用的取代码
+//                    JSONArray mJsonArray = jsonObject.getJSONArray("data");
+////                    JSONObject object = (JSONObject) mJsonArray.get(0);
+                    // py服务器直接用下面代码，传递过来的就是就是一个json对象。
+                    JSONObject object = jsonObject.getJSONObject("data");
                     L.e("ccccc" + object);
                     String user_isGuardOn = object.getString("user_isGuardOn");
                     String user_locked_pwd = object.getString("user_Guard_pwd");

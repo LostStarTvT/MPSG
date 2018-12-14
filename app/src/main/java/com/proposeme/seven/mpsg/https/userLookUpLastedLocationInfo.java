@@ -41,12 +41,15 @@ public class userLookUpLastedLocationInfo extends baseHttp{
                     if(code == 200){ //200表示存储成功。
                         ResponseBody body = response.body();
                         final String msg = body.string();
+//                        L.e("cccc1" + msg);
                         body.close();
 
                         //将string数据转成json对象。
                         try {
-                            JSONArray mJsonArray = new JSONArray(msg);
-                            JSONObject object = (JSONObject) mJsonArray.get(0);
+                            //处理py服务器返回来的数据。
+                            JSONObject object = new JSONObject(msg);
+//                            JSONArray mJsonArray = new JSONArray(msg);
+//                            JSONObject object = (JSONObject) mJsonArray.get(0);
                             String user_login_id = object.getString("user_login_id");
                             String longitude = object.getString("longitude");
                             String latitude = object.getString("latitude");
