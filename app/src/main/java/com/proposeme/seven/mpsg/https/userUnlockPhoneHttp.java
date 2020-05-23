@@ -30,6 +30,8 @@ public class userUnlockPhoneHttp extends baseHttp{
         call.enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, IOException e) {
+                //初始阶段因为没有服务器，所以直接解锁。
+                mOnUnlockedSuccess.OnSuccess(true);
                 new Thread(){
                     public void run() {
                         Looper.prepare();
@@ -41,6 +43,7 @@ public class userUnlockPhoneHttp extends baseHttp{
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+
                 if(response.isSuccessful()){
                     //首先判断请求是否成功。200表示成功
                     final int code = response.code();
@@ -66,6 +69,7 @@ public class userUnlockPhoneHttp extends baseHttp{
                         if (authenticationFlag == 200){
                             mOnUnlockedSuccess.OnSuccess(true);
                         }else {
+                            // 更改为false则表示 正常运行，现阶段为测试都能解锁
                             mOnUnlockedSuccess.OnSuccess(false);
                         }
 
