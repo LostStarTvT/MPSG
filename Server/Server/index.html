@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>测试表单</title>
+    <style>
+        div{
+            width: 300px;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        div:nth-child(1){
+            border: 2px solid #058;
+        }
+        div:nth-child(2){
+            border: 2px solid #6c9;
+        }
+        div>h3{
+            margin: 0 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h3>get请求测试表单</h3>
+        <form action="/ajax" method="post">
+            <input type="text" name="keyword" placeholder="请输入关键字">
+            <input type="submit" value="搜索">
+        </form>
+    </div>
+    <!-- <div> 已经被删除。
+        <h3>post请求测试表单</h3>
+        <form action="/users/register" method="post">
+            <input type="text" name="params" placeholder="请输入姓名">
+            <input type="submit" value="提交">
+        </form>
+    </div> -->
+</body>
+</html>

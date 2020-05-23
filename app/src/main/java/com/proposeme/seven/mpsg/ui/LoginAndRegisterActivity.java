@@ -427,15 +427,19 @@ public class LoginAndRegisterActivity extends AppCompatActivity implements Loade
             } else {
                 //根据放回的状态信息 返回相应的提示信息。
                 String responseState = user.getResponseState();
-                if (responseState.equals("100")){ //表示密码不正确
-                    mPasswordView.setError(getString(R.string.error_incorrect_password));
-                    mPasswordView.requestFocus();
-                }else if (responseState.equals("300")){ //表示账号出错。
-                    mEmailView.setError(getString(R.string.error_invalid_email));
-                    mEmailView.requestFocus();
+                //当服务器没有响应的时候 会出现返回值为空，所有需要判断responseState是否为空。
+                if (responseState != null){
+                    if (responseState.equals("100")){ //表示密码不正确
+                        mPasswordView.setError(getString(R.string.error_incorrect_password));
+                        mPasswordView.requestFocus();
+                    }else if (responseState.equals("300")){ //表示账号出错。
+                        mEmailView.setError(getString(R.string.error_invalid_email));
+                        mEmailView.requestFocus();
+                    }
                 }else {
-                    Toast.makeText(getApplication(),"出现了一些小问题",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplication(),"服务器无响应或网络无连接~",Toast.LENGTH_LONG).show();
                 }
+
             }
         }
 

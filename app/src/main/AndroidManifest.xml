@@ -62,19 +62,18 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <!-- 以上为正常的逻辑，以下为直接进入主页面的逻辑 -->
 
+         <!--<activity-->
+             <!--android:name=".ui.MainActivity"-->
+             <!--android:label="@string/title_activity_main"-->
+             <!--android:theme="@style/AppTheme.NoActionBar">-->
+             <!--<intent-filter>-->
+                 <!--<action android:name="android.intent.action.MAIN" />-->
 
-        <!-- <activity -->
-        <!-- android:name=".ui.MainActivity" -->
-        <!-- android:label="@string/title_activity_main" -->
-        <!-- android:theme="@style/AppTheme.NoActionBar"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.intent.action.MAIN" /> -->
+                 <!--<category android:name="android.intent.category.LAUNCHER" />-->
+             <!--</intent-filter>-->
+         <!--</activity>-->
 
-
-        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-        <!-- </intent-filter> -->
-        <!-- </activity> -->
-
+        <!--       到此 -->
         <activity android:name=".ui.TestActivity" />
         <activity android:name=".ui.LoadingActivity" />
 
